@@ -1,0 +1,29 @@
+name: Build
+on: [ pull_request ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [ 16.x ]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Node ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Install PNPM
+        run: npm install -g pnpm
+      - name: Install Website Dependencies
+        run: pnpm i
+      - name: Checking Svelte-Kit
+        run: pnpm check
+      - name: Build Svelte
+        run: pnpm build
+      - name: Test Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-${{ github.head_ref }}
+          path: 
+            .svelte-kit
